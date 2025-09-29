@@ -150,6 +150,7 @@
         let isFlipped = false;
         let score = 0;
         let wrongCount = 0;
+        let conversionPosition; // 'top' or 'bottom'
 
         function createDeadTurtleRain() {
             const container = document.getElementById('deadTurtles');
@@ -176,6 +177,7 @@
         function startNewQuestion() {
             currentConversion = getRandomConversion();
             isFlipped = false;
+            conversionPosition = Math.random() < 0.5 ? 'top' : 'bottom';
             updateDisplay();
             document.getElementById('result').textContent = '';
             document.getElementById('answerBox').textContent = '';
@@ -190,12 +192,22 @@
         function updateDisplay() {
             document.getElementById('originalUnit1').textContent = `${currentConversion.value} ${currentConversion.from}`;
             
-            if (!isFlipped) {
-                document.getElementById('topConversion').textContent = currentConversion.topUnit;
-                document.getElementById('bottomConversion').textContent = currentConversion.bottomUnit;
+            if (conversionPosition === 'top') {
+                if (!isFlipped) {
+                    document.getElementById('topConversion').textContent = currentConversion.topUnit;
+                    document.getElementById('bottomConversion').textContent = currentConversion.bottomUnit;
+                } else {
+                    document.getElementById('topConversion').textContent = currentConversion.bottomUnit;
+                    document.getElementById('bottomConversion').textContent = currentConversion.topUnit;
+                }
             } else {
-                document.getElementById('topConversion').textContent = currentConversion.bottomUnit;
-                document.getElementById('bottomConversion').textContent = currentConversion.topUnit;
+                if (!isFlipped) {
+                    document.getElementById('topConversion').textContent = currentConversion.bottomUnit;
+                    document.getElementById('bottomConversion').textContent = currentConversion.topUnit;
+                } else {
+                    document.getElementById('topConversion').textContent = currentConversion.topUnit;
+                    document.getElementById('bottomConversion').textContent = currentConversion.bottomUnit;
+                }
             }
         }
 
@@ -214,10 +226,9 @@
         function checkAnswer() {
             const originalUnit = currentConversion.from;
             const bottomText = document.getElementById('bottomConversion').textContent;
-            const bottomUnit = bottomText.split(' ')[1]; // Extract unit from "1000 m" or "1 km"
+            const bottomUnit = bottomText.split(' ')[1];
             
             if (originalUnit === bottomUnit) {
-                // Units match - cross out only the units
                 const originalCell = document.getElementById('originalUnit1');
                 const bottomCell = document.getElementById('bottomConversion');
                 
@@ -227,12 +238,10 @@
                 originalCell.innerHTML = `${originalParts[0]} <span class="unit-strikethrough">${originalParts[1]}</span>`;
                 bottomCell.innerHTML = `${bottomParts[0]} <span class="unit-strikethrough">${bottomParts[1]}</span>`;
                 
-                // Get numbers from top and bottom
                 const topText = document.getElementById('topConversion').textContent;
                 const topNumber = parseFloat(topText.split(' ')[0]);
                 const bottomNumber = parseFloat(bottomParts[0]);
                 
-                // Multiply top numbers, divide by bottom number
                 const answer = (currentConversion.value * topNumber) / bottomNumber;
                 const resultUnit = topText.split(' ')[1];
                 
@@ -279,3 +288,5 @@
     </script>
 </body>
 </html>
+
+
